@@ -104,8 +104,27 @@ router.post("/addMedicine", async (req, res) => {
   }
 });
 
-router.get("/medicines", (req, res) => {
-  // Handle getting medicine details logic
+router.post("/search", async (req, res) => {
+  try {
+    const { search } = req.body;
+
+    // Validate the 'search' parameter
+    if (!search) {
+      return res.status(400).json({ message: "Search parameter is required." });
+    }
+
+    // Search for Medicines with the provided StripID
+    const mdata = await Medicine.find({ StripID: search });
+
+    if (mdata && mdata.length > 0) {
+      return res.json(mdata);
+    } else {
+      return res.status(404).json({ message: "No data found." });
+    }
+  } catch (error) {
+    console.error("Error fetching medicines:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
 module.exports = router;

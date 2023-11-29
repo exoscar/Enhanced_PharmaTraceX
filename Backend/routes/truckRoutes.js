@@ -18,18 +18,6 @@ const users = require(path.join(
   "UserSchema.js"
 ));
 
-const Alerts = require(path.join(
-  __dirname,
-  "..",
-  "Database",
-  "Schema",
-  "AlertsSchema.js"
-));
-
-const isValidData = (temperature, humidity) => {
-  return !isNaN(temperature) && !isNaN(humidity);
-};
-
 router.post("/sendTruckDetails", async (req, res) => {
   try {
     const { RegistrationNumber, StripID, From, To, address } = req.body;
@@ -70,56 +58,25 @@ router.post("/sendTruckDetails", async (req, res) => {
   }
 });
 
-router.post("/sendEnvConditions", async (req, res) => {
+router.post("/search", async (req, res) => {
   try {
-    const { temperature, humidity, RegistrationNumber } = req.body;
-    console.log(temperature, humidity, RegistrationNumber);
+    const { search } = req.body;
 
-    // Validate temperature and humidity as numbers
-    if (!isValidData(temperature, humidity)) {
-      return res.status(400).json({
-        message: "Temperature and humidity must be valid numbers.",
-      });
+    // Validate the 'search' parameter
+    if (!search) {
+      return res.status(400).json({ message: "Search parameter is required." });
     }
 
-    // Find truck details with the given RegistrationNumber and status "0"
-    const truckDetails = await Trucks.findOne({
-      RegistrationNumber,
-      status: "0",
-    });
+    // Find TruckDetails based on the RegistrationNumber
+    const truckData = await Trucks.find({ RegistrationNumber: search });
 
-    if (!truckDetails) {
-      console.log("No matching truck with given registration number is found.");
-      return res.status(404).json({
-        message: "No matching truck with given registration number is found.",
-      });
+    if (truckData.length > 0) {
+      return res.json(truckData);
+    } else {
+      return res.json("No data found");
     }
-
-    const StripID = truckDetails.StripID;
-
-    // Check if there are existing alerts for the given RegistrationNumber and status "0"
-    const existingAlerts = await Alerts.findOne({
-      RegistrationNumber,
-      status: "0",
-    });
-
-    if (existingAlerts) {
-      return res.json("Alerts already exist for the provided details.");
-    }
-
-    // Insert new alerts with the provided data
-    const newAlertsData = {
-      temperature,
-      humidity,
-      RegistrationNumber,
-      StripID,
-      status: "0",
-    };
-
-    await Alerts.insertMany([newAlertsData]);
-    return res.json("Data inserted successfully.");
   } catch (error) {
-    console.error("Error occurred:", error);
+    console.error("Error fetching truck data:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
