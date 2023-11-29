@@ -1,0 +1,37 @@
+{
+  "name": "again",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "yarn build && npx thirdweb@latest upload dist"
+  },
+  "dependencies": {
+    "@thirdweb-dev/react": "^3",
+    "@thirdweb-dev/sdk": "^3",
+    "apexcharts": "^3.44.0",
+    "axios": "^1.5.1",
+    "chart.js": "^4.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "ethers": "^5",
+    "express": "^4.18.2",
+    "file-saver": "^2.0.5",
+    "fs": "^0.0.1-security",
+    "mongoose": "^7.6.2",
+    "nodemon": "^3.0.1",
+    "path": "^0.12.7",
+    "qrcode.react": "^3.1.0",
+    "react": "^18.2",
+    "react-apexcharts": "^1.4.1",
+    "react-dom": "^18.2",
+    "react-router-dom": "^6.16.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^2",
+    "vite": "^3",
+    "vite-plugin-node-polyfills": "^0.7.0"
+  }
+}
