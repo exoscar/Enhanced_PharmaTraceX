@@ -30,13 +30,14 @@ const trucksSchema = new mongoose.Schema({
     type: String,
     required: true,
     default: "",
-  },
-  user: {
-    type: mongoose.Schema.Types.String,
     ref: "users",
-    localField: "metamaskID",
-    foreignField: "metamaskID",
   },
+  // user: {
+  //   type: mongoose.Schema.Types.String,
+  //   ref: "users",
+  //   localField: "metamaskID",
+  //   foreignField: "metamaskID",
+  // },
 });
 
 const Trucks = mongoose.model("Trucks", trucksSchema);
