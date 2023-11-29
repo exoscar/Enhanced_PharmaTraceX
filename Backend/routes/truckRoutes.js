@@ -81,4 +81,22 @@ router.post("/search", async (req, res) => {
   }
 });
 
+// start of GET http method
+
+router.get("/viewTrucks", async (req, res) => {
+  try {
+    // Find all trucks
+    const result = await Trucks.find({});
+
+    if (result.length > 0) {
+      return res.json(result);
+    } else {
+      return res.json("No trucks found");
+    }
+  } catch (error) {
+    console.error("Error fetching trucks:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 module.exports = router;

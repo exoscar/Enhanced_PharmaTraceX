@@ -127,4 +127,22 @@ router.post("/search", async (req, res) => {
   }
 });
 
+//Start of http get methods
+
+router.get("/viewMedicines", async (req, res) => {
+  try {
+    // Find all medicines
+    const mdata = await Medicine.find({});
+
+    if (mdata.length > 0) {
+      return res.json(mdata);
+    } else {
+      return res.json("No meds found");
+    }
+  } catch (error) {
+    console.error("Error fetching medicines:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 module.exports = router;

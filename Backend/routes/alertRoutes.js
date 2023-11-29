@@ -139,4 +139,22 @@ router.post("/updateStatus", async (req, res) => {
   }
 });
 
+//begin of http get methods
+
+router.get("/viewAlerts", async (req, res) => {
+  try {
+    // Find Alerts with status "0"
+    const result = await Alerts.find({ status: "0" });
+
+    if (result.length > 0) {
+      return res.json(result);
+    } else {
+      return res.json("No alerts found");
+    }
+  } catch (error) {
+    console.error("Error fetching alerts:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 module.exports = router;
