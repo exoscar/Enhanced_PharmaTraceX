@@ -25,11 +25,18 @@ const Trucks = require(path.join(
   "TrucksSchema.js"
 ));
 
+const verifyTokenMiddleware = require(path.join(
+  __dirname,
+  "..",
+  "Security",
+  "authMiddleware.js"
+)).verifyTokenMiddleware;
+
 const isValidData = (temperature, humidity) => {
   return !isNaN(temperature) && !isNaN(humidity);
 };
 
-router.post("/sendEnvConditions", async (req, res) => {
+router.post("/sendEnvConditions", verifyTokenMiddleware, async (req, res) => {
   try {
     const { temperature, humidity, RegistrationNumber } = req.body;
     console.log(temperature, humidity, RegistrationNumber);
@@ -83,7 +90,7 @@ router.post("/sendEnvConditions", async (req, res) => {
   }
 });
 
-router.post("/search", async (req, res) => {
+router.post("/search", verifyTokenMiddleware, async (req, res) => {
   try {
     const { search } = req.body;
 
@@ -106,7 +113,7 @@ router.post("/search", async (req, res) => {
   }
 });
 
-router.post("/updateStatus", async (req, res) => {
+router.post("/updateStatus", verifyTokenMiddleware, async (req, res) => {
   try {
     const { sid } = req.body;
     const sidd = sid.toString();
@@ -141,7 +148,7 @@ router.post("/updateStatus", async (req, res) => {
 
 //begin of http get methods
 
-router.get("/viewAlerts", async (req, res) => {
+router.get("/viewAlerts", verifyTokenMiddleware, async (req, res) => {
   try {
     // Find Alerts with status "0"
     const result = await Alerts.find({ status: "0" });

@@ -10,7 +10,15 @@ const Medicine = require(path.join(
   "Schema",
   "MedicineSchema.js"
 ));
-router.post("/addMedicine", async (req, res) => {
+
+const verifyTokenMiddleware = require(path.join(
+  __dirname,
+  "..",
+  "Security",
+  "authMiddleware.js"
+)).verifyTokenMiddleware;
+
+router.post("/addMedicine", verifyTokenMiddleware, async (req, res) => {
   try {
     const {
       MedicineName,
@@ -104,7 +112,7 @@ router.post("/addMedicine", async (req, res) => {
   }
 });
 
-router.post("/search", async (req, res) => {
+router.post("/search", verifyTokenMiddleware, async (req, res) => {
   try {
     const { search } = req.body;
 
@@ -129,7 +137,7 @@ router.post("/search", async (req, res) => {
 
 //Start of http get methods
 
-router.get("/viewMedicines", async (req, res) => {
+router.get("/viewMedicines", verifyTokenMiddleware, async (req, res) => {
   try {
     // Find all medicines
     const mdata = await Medicine.find({});

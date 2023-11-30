@@ -17,8 +17,14 @@ const users = require(path.join(
   "Schema",
   "UserSchema.js"
 ));
+const verifyTokenMiddleware = require(path.join(
+  __dirname,
+  "..",
+  "Security",
+  "authMiddleware.js"
+)).verifyTokenMiddleware;
 
-router.post("/sendTruckDetails", async (req, res) => {
+router.post("/sendTruckDetails", verifyTokenMiddleware, async (req, res) => {
   try {
     const { RegistrationNumber, StripID, From, To, address } = req.body;
     const initialStatus = "0";
@@ -58,7 +64,7 @@ router.post("/sendTruckDetails", async (req, res) => {
   }
 });
 
-router.post("/search", async (req, res) => {
+router.post("/search", verifyTokenMiddleware, async (req, res) => {
   try {
     const { search } = req.body;
 
@@ -83,7 +89,7 @@ router.post("/search", async (req, res) => {
 
 // start of GET http method
 
-router.get("/viewTrucks", async (req, res) => {
+router.get("/viewTrucks", verifyTokenMiddleware, async (req, res) => {
   try {
     // Find all trucks
     const result = await Trucks.find({});

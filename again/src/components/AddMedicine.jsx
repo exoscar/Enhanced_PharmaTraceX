@@ -39,15 +39,6 @@ const AddMedicine = () => {
     }
   };
 
-  // const handleSubmit = async (event) => {
-  //   event.preventDefault();
-  //   await addMedicine({
-  //     ...formData,
-  //   });
-
-  //   console.log(formData);
-  // };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     await addMedicine({

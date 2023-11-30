@@ -2,6 +2,12 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const path = require("path");
+const jwtService = require(path.join(
+  __dirname,
+  "..",
+  "Security",
+  "jwtAuth.js"
+));
 
 const users = require(path.join(
   __dirname,
@@ -28,7 +34,10 @@ router.post("/login", async (req, res) => {
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (isPasswordValid) {
-          res.json({ status: "success", message: "Login successful." });
+          const token = await jwtService.generateToken({
+            metamaskID: user.metamaskID,
+          });
+          res.json({ status: "success", message: "Login successful.", token });
         } else {
           res
             .status(401)
@@ -79,9 +88,11 @@ router.post("/signup", async (req, res) => {
           metamaskID,
           password: hashedPassword,
         });
+        const token = await jwtService.generateToken({ metamaskID });
         res.json({
           status: "success",
           message: "User created successfully.",
+          token,
         });
       } else {
         res
