@@ -2,8 +2,19 @@ import React, { useState } from "react";
 import { ethers } from "ethers";
 import axios from "axios";
 import { useStateContext } from "../context";
+
 const AddMedicine = () => {
-  const { addMedicine, connect, address } = useStateContext();
+  const ADDMEDICNE_URL = import.meta.env.VITE_ADD_MEDICINE_URL;
+
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+  };
+
+  const { addMedicine, connect, address, addMultipleMedicines } =
+    useStateContext();
   if (address) {
     console.log("Address", address);
   } else {
@@ -25,7 +36,6 @@ const AddMedicine = () => {
   const handleInputChange = (event) => {
     const { name, value } = event.target;
 
-    //  Convert ExpiryDate and ManufactureDate to strings
     if (name === "ExpiryDate" || name === "ManufactureDate") {
       setFormData({
         ...formData,
@@ -41,36 +51,45 @@ const AddMedicine = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    await addMedicine({
+    await addMultipleMedicines({
       ...formData,
     });
 
     try {
       await axios
-        .post("http://localhost:5000/addMedicine", {
-          MedicineName: formData.MedicineName,
-          StripID: formData.StripID,
-          Conditions: formData.Conditions,
-          Quantity: formData.Quantity,
-          Status: formData.Status,
-          Ingredients: formData.Ingredients,
-          SideEffects: formData.SideEffects,
-          ExpiryDate: formData.ExpiryDate,
-          ManufactureDate: formData.ManufactureDate,
-          BatchNumber: formData.BatchNumber,
-          Price: formData.Price,
-          address: address,
-        })
+        .post(
+          ADDMEDICNE_URL,
+          {
+            MedicineName: formData.MedicineName,
+            StripID: formData.StripID,
+            Conditions: formData.Conditions,
+            Quantity: formData.Quantity,
+            Status: formData.Status,
+            Ingredients: formData.Ingredients,
+            SideEffects: formData.SideEffects,
+            ExpiryDate: formData.ExpiryDate,
+            ManufactureDate: formData.ManufactureDate,
+            BatchNumber: formData.BatchNumber,
+            Price: formData.Price,
+            address: address,
+          },
+          config
+        )
         .then((res) => {
-          if (res.data == "exists") {
-            alert("Medicine Already Exists");
-          } else if (res.data == "added") {
-            alert("Medicine Added Successfully");
+          if (res.data.status == "success") {
+            alert(res.data.message);
           }
         })
-        .catch((e) => {
-          alert("some error", e);
-          console.log(e);
+        .catch((error) => {
+          if (error.response) {
+            // Display the server's error message for a Bad Request
+            alert(error.response.data.message);
+          } else {
+            console.error("An error occurred:", error);
+            alert(
+              "An error occurred. Please check the console for more details."
+            );
+          }
         });
     } catch (e) {
       console.log(e);
@@ -108,7 +127,7 @@ const AddMedicine = () => {
                   <div className="col-md-6">
                     <div className="form-floating">
                       <input
-                        type="number"
+                        type="text"
                         className="form-control"
                         id="floatingDrugCode"
                         placeholder="National Drug Code"

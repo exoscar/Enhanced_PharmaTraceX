@@ -40,7 +40,7 @@ router.post("/login", async (req, res) => {
           res.json({ status: "success", message: "Login successful.", token });
         } else {
           res
-            .status(401)
+            .status(400)
             .json({ status: "failure", message: "Incorrect password." });
         }
       } else {

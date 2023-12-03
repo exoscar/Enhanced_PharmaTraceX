@@ -3,6 +3,16 @@ import "../../public/assets/css/style.css";
 import axios from "axios";
 import { useStateContext } from "../context";
 const Alerts = () => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+  };
+  const SEARCH_ALERTS_URL = import.meta.env.VITE_SEARCH_ALERTS_URL;
+  const ALERTUPDATEURL = import.meta.env.VITE_ALERTUPDATEURL;
+  const VIEW_ALERTS_URL = import.meta.env.VITE_VIEW_ALERTS_URL;
+  const VITE_VIEW_MEDICINE_URL = import.meta.env.VITE_VIEW_MEDICINE_URL;
   const { updateManyMedicine, connect, address } = useStateContext();
   if (address) {
     console.log("Address", address);
@@ -22,7 +32,7 @@ const Alerts = () => {
     e.preventDefault();
     try {
       await axios
-        .post("http://localhost:5000/alerts", { search })
+        .post(SEARCH_ALERTS_URL, { search }, config)
         .then((res) => {
           if (res.data) {
             setAlerts(res.data);
@@ -30,8 +40,16 @@ const Alerts = () => {
             console.log("no data");
           }
         })
-        .catch((e) => {
-          console.log(e);
+        .catch((error) => {
+          if (error.response) {
+            // Display the server's error message for a Bad Request
+            alert(error.response.data.message);
+          } else {
+            console.error("An error occurred:", error);
+            alert(
+              "An error occurred. Please check the console for more details."
+            );
+          }
         });
     } catch (e) {
       console.log(e);
@@ -110,16 +128,20 @@ const Alerts = () => {
         console.log(sid);
         try {
           await axios
-            .post("http://localhost:5000/updateStatus", { sid })
+            .post(ALERTUPDATEURL, { sid }, config)
             .then((res) => {
-              if (res.data == "updated") {
-                console.log("updated");
-              } else {
-                console.log("not updated");
-              }
+              alert(res.data.message);
             })
-            .catch((e) => {
-              console.log(e);
+            .catch((error) => {
+              if (error.response) {
+                // Display the server's error message for a Bad Request
+                alert(error.response.data.message);
+              } else {
+                console.error("An error occurred:", error);
+                alert(
+                  "An error occurred. Please check the console for more details."
+                );
+              }
             });
         } catch (e) {
           console.log(e);
@@ -133,7 +155,7 @@ const Alerts = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await axios.get("http://localhost:5000/alerts");
+        const result = await axios.get(VIEW_ALERTS_URL, config);
         setAlerts(result.data);
         const hehe = extractStripData(result.data);
 
@@ -147,7 +169,7 @@ const Alerts = () => {
 
     const fetchMedicine = async () => {
       try {
-        const medi = await axios.get("http://localhost:5000/medicines");
+        const medi = await axios.get(VITE_VIEW_MEDICINE_URL, config);
         setMedicines(medi.data);
         console.log(medi.data);
       } catch (error) {
@@ -220,17 +242,17 @@ const Alerts = () => {
                 </tr>
               </thead>
               <tbody>
-                {alerts.map((alert, i) => (
-                  <tr key={alert.RegistrationNumber}>
+                {alerts.map((alertt, i) => (
+                  <tr key={alertt.RegistrationNumber}>
                     <th scope="row">{i + 1}</th>
-                    <td>{alert.RegistrationNumber}</td>
+                    <td>{alertt.RegistrationNumber}</td>
                     <td>
-                      {alert.StripID.map((id) => (
+                      {alertt.StripID.map((id) => (
                         <span key={id}>{id}, </span>
                       ))}
                     </td>
-                    <td>{alert.temperature}</td>
-                    <td>{alert.humidity}</td>
+                    <td>{alertt.temperature}</td>
+                    <td>{alertt.humidity}</td>
                   </tr>
                 ))}
               </tbody>

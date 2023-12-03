@@ -3,31 +3,37 @@ import "../../public/assets/css/Login.css";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 const Login = () => {
-  const weurl = "http://localhost:5000/auth";
+  const backendLoginURL = import.meta.env.VITE_LOGINURL;
+  const backendSignUpURL = import.meta.env.VITE_SIGNUPURL;
 
   const history = useNavigate();
   const [isSignUpMode, setIsSignUpMode] = useState(false);
   const [companyName, setCompanyName] = useState("");
-  const [metamaskId, setMetamaskId] = useState("");
+  const [metamaskID, setMetamaskId] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   async function handleSignIn(e) {
     e.preventDefault();
     try {
       await axios
-        .post(weurl, { metamaskId, password })
+        .post(backendLoginURL, { metamaskID, password })
         .then((res) => {
-          if (res.data == "exists") {
-            history("/dashboard", { state: { id: metamaskId } });
-          } else if (res.data == "Wrong Password") {
-            alert("Wrong Password");
-          } else if (res.data == "not exists") {
-            alert("User not found");
+          if (res.data.status == "success") {
+            const token = res.data.token;
+            localStorage.setItem("token", token);
+            history("/dashboard", { state: { id: metamaskID } });
           }
         })
-        .catch((e) => {
-          alert("wrong details");
-          console.log(e);
+        .catch((error) => {
+          if (error.response) {
+            // Display the server's error message for a Bad Request
+            alert(error.response.data.message);
+          } else {
+            console.error("An error occurred:", error);
+            alert(
+              "An error occurred. Please check the console for more details."
+            );
+          }
         });
     } catch (e) {
       console.log(e);
@@ -38,22 +44,29 @@ const Login = () => {
     e.preventDefault();
     try {
       await axios
-        .post(weurl, {
+        .post(backendSignUpURL, {
           companyName,
-          metamaskId,
+          metamaskID,
           password,
           confirmPassword,
         })
         .then((res) => {
-          if (res.data == "exists") {
-            alert("User already exists");
-          } else if (res.data == "not exists") {
-            history("/dashboard", { state: { id: metamaskId } });
+          if (res.data.status == "success") {
+            const token = res.data.token;
+            localStorage.setItem("token", token);
+            history("/dashboard", { state: { id: metamaskID } });
           }
         })
-        .catch((e) => {
-          alert("wrong details");
-          console.log(e);
+        .catch((error) => {
+          if (error.response) {
+            // Display the server's error message for a Bad Request
+            alert(error.response.data.message);
+          } else {
+            console.error("An error occurred:", error);
+            alert(
+              "An error occurred. Please check the console for more details."
+            );
+          }
         });
     } catch (e) {
       console.log(e);

@@ -31,6 +31,7 @@ router.post("/addMedicine", verifyTokenMiddleware, async (req, res) => {
       ManufactureDate,
       BatchNumber,
       Price,
+      address,
     } = req.body;
 
     // Validate required fields
@@ -44,7 +45,8 @@ router.post("/addMedicine", verifyTokenMiddleware, async (req, res) => {
       !ExpiryDate ||
       !ManufactureDate ||
       !BatchNumber ||
-      !Price
+      !Price ||
+      !address
     ) {
       return res.status(400).json({ message: "All fields are required." });
     }
@@ -72,20 +74,35 @@ router.post("/addMedicine", verifyTokenMiddleware, async (req, res) => {
           "Temperature and humidity conditions must be in the format 'min-max'.",
       });
     }
+    const StripIDs = [];
+    const commaSeparatedParts = StripID.split(",");
+
+    for (const part of commaSeparatedParts) {
+      if (part.includes("-")) {
+        const [start, end] = part.split("-").map(Number);
+        for (let i = start; i <= end; i++) {
+          StripIDs.push(i);
+        }
+      } else {
+        StripIDs.push(Number(part));
+      }
+    }
 
     // Check if Medicine with the same StripID already exists
-    const existingMedicine = await Medicine.findOne({ StripID });
+    const existingMedicines = await Medicine.find({
+      StripID: { $in: StripIDs },
+    });
 
-    if (existingMedicine) {
-      return res
-        .status(409)
-        .json({ message: "Medicine with the same StripID already exists." });
+    if (existingMedicines.length > 0) {
+      return res.status(409).json({
+        message: "Medicine with one or more StripIDs already exists.",
+      });
     }
 
     // Create new Medicine document
-    const newMedicine = new Medicine({
+    const newMedicines = StripIDs.map((stripID) => ({
       MedicineName,
-      StripID,
+      StripID: stripID,
       mintemp: tempRange[0],
       maxtemp: tempRange[1],
       minhumi: humiRange[0],
@@ -98,14 +115,16 @@ router.post("/addMedicine", verifyTokenMiddleware, async (req, res) => {
       BatchNumber,
       Price,
       status: "Ideal",
-      address: "0x0000000",
-    });
+      address: address,
+    }));
 
     // Save the document
-    await newMedicine.save();
-
+    await Medicine.insertMany(newMedicines);
     console.log("Medicine document saved successfully");
-    return res.json({ message: "Medicine document saved successfully" });
+    return res.json({
+      status: "success",
+      message: "Medicine document saved successfully",
+    });
   } catch (error) {
     console.error("Error adding new Medicine document:", error);
     return res.status(500).json({ message: "Internal Server Error" });

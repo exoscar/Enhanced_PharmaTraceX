@@ -3,6 +3,13 @@ import { useStateContext } from "../context";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 const AddTruck = () => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+  };
+  const SEND_TRUCK_DETAILS_URL = import.meta.env.VITE_SEND_TRUCK_DETAILS_URL;
   const { connect, address } = useStateContext();
 
   if (address) {
@@ -38,23 +45,32 @@ const AddTruck = () => {
 
     try {
       await axios
-        .post("http://localhost:5000/sendTruckDetails", {
-          RegistrationNumber: formData.RegistrationNumber,
-          StripID: formData.StripID,
-          From: formData.From,
-          To: formData.To,
-          address: address,
-        })
+        .post(
+          SEND_TRUCK_DETAILS_URL,
+          {
+            RegistrationNumber: formData.RegistrationNumber,
+            StripID: formData.StripID,
+            From: formData.From,
+            To: formData.To,
+            address: address,
+          },
+          config
+        )
         .then((res) => {
-          if (res.data == "exists") {
-            alert("Truck Already Assigned");
-          } else if (res.data == "added") {
-            alert("Upload Successful");
+          if (res.status == 201) {
+            alert(res.data.message);
           }
         })
-        .catch((e) => {
-          alert("some error", e);
-          console.log(e);
+        .catch((error) => {
+          if (error.response) {
+            // Display the server's error message for a Bad Request
+            alert(error.response.data.message);
+          } else {
+            console.error("An error occurred:", error);
+            alert(
+              "An error occurred. Please check the console for more details."
+            );
+          }
         });
     } catch (e) {
       console.log(e);

@@ -151,7 +151,7 @@ const App = () => {
       </div>
     );
   }
-
+  const token = localStorage.getItem("token");
   return (
     <div>
       <Routes>
@@ -160,26 +160,38 @@ const App = () => {
         <Route
           path="/AddTruckDetails"
           element={
-            <div>
-              <STLayout /> <AddTruck />
-            </div>
+            token ? (
+              <div>
+                <STLayout /> <AddTruck />
+              </div>
+            ) : (
+              <Login />
+            )
           }
         />
         <Route
           path="/dashboard"
           element={
-            <div>
-              <STLayout />
-              <Dashboard />{" "}
-            </div>
+            token ? (
+              <div>
+                <STLayout />
+                <Dashboard />
+              </div>
+            ) : (
+              <Login />
+            )
           }
         />
         <Route
           path="/addMedicine"
           element={
-            <div>
-              <STLayout /> <AddMedicine />
-            </div>
+            token ? (
+              <div>
+                <STLayout /> <AddMedicine />
+              </div>
+            ) : (
+              <Login />
+            )
           }
         />
         <Route
@@ -193,26 +205,38 @@ const App = () => {
         <Route
           path="/searchMedicine"
           element={
-            <div>
-              <STLayout />
-              <SearchMedicine />
-            </div>
+            token ? (
+              <div>
+                <STLayout />
+                <SearchMedicine />
+              </div>
+            ) : (
+              <Login />
+            )
           }
         />
         <Route
           path="/alerts"
           element={
-            <div>
-              <STLayout /> <Alerts />
-            </div>
+            token ? (
+              <div>
+                <STLayout /> <Alerts />
+              </div>
+            ) : (
+              <Login />
+            )
           }
         />
         <Route
           path="/viewTrucks"
           element={
-            <div>
-              <STLayout /> <ViewTruck />
-            </div>
+            token ? (
+              <div>
+                <STLayout /> <ViewTruck />
+              </div>
+            ) : (
+              <Login />
+            )
           }
         />
         <Route

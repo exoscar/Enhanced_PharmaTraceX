@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract MedicineContract {
+contract PharmaTraceX {
     struct Medicine {
         // address owner;
         string MedicineName;
@@ -110,6 +110,43 @@ function deleteAllStrips() public {
     }
     medicineCount = 0; 
 }
+
+
+function addMultipleMedicines(
+    string memory _MedicineNames,
+    uint256[] memory _StripIDs,
+    string[] memory _ConditionsList,
+    address _Manufacturers,
+    string memory _Quantities,
+    string memory _statuses,
+    string[] memory _IngredientsList,
+    string[] memory _sideEffectsList,
+    string memory _ExpiryDates,
+    string memory _ManufacturingDates,
+    string memory _BatchNumbers,
+    string memory _Prices
+) public {
+    
+    for (uint256 i = 0; i < _StripIDs.length; i++) {
+        addMedicine(
+            _MedicineNames,
+            _StripIDs[i],
+            _ConditionsList,
+            _Manufacturers,
+            _Quantities,
+            _statuses,
+            _IngredientsList,
+            _sideEffectsList,
+            _ExpiryDates,
+            _ManufacturingDates,
+            _BatchNumbers,
+            _Prices
+        );
+    }
+}
+
+
+
 
 
 

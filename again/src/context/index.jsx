@@ -11,12 +11,7 @@ import { ethers } from "ethers";
 const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
-  // const { contract } = useContract(
-  //   "0x47f0F482fb4EC4DfE827A2E8AfC32bae48F5510d"
-  // );
-  const { contract } = useContract(
-    "0xEBf309D95A0F35EFB3B02bC028d7A7cA52af4e65"
-  );
+  const { contract } = useContract(import.meta.env.VITE_CONTRACT);
 
   const { mutateAsync: addMedicine } = useContractWrite(
     contract,
@@ -29,6 +24,10 @@ export const StateContextProvider = ({ children }) => {
   const { mutateAsync: updateManyMedicine } = useContractWrite(
     contract,
     "updateManyMedicine"
+  );
+  const { mutateAsync: addMultipleMedicines } = useContractWrite(
+    contract,
+    "addMultipleMedicines"
   );
 
   const address = useAddress();
@@ -91,12 +90,51 @@ export const StateContextProvider = ({ children }) => {
     }
   };
 
+  const publishMultipleMedicines = async (form) => {
+    try {
+      const StripIDs = [];
+      const commaSeparatedParts = form.StripID.split(",");
+
+      for (const part of commaSeparatedParts) {
+        if (part.includes("-")) {
+          const [start, end] = part.split("-").map(Number);
+          for (let i = start; i <= end; i++) {
+            StripIDs.push(i);
+          }
+        } else {
+          StripIDs.push(Number(part));
+        }
+      }
+
+      const data = await addMultipleMedicines({
+        args: [
+          form.MedicineName,
+          StripIDs,
+          [form.Conditions],
+          address,
+          form.Quantity,
+          form.Status,
+          [form.Ingredients],
+          [form.SideEffects],
+          form.ExpiryDate,
+          form.ManufactureDate,
+          form.BatchNumber,
+          form.Price,
+        ],
+      });
+      console.log("Contract call success");
+    } catch (error) {
+      console.log("Contract call failed", error);
+    }
+  };
+
   return (
     <StateContext.Provider
       value={{
         address,
         contract,
         connect,
+        addMultipleMedicines: publishMultipleMedicines,
         addMedicine: publishMedicine,
         getMedicine,
         updateMedicine: ModifyMedicine,

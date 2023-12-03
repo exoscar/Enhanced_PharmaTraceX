@@ -2,6 +2,14 @@ import React, { useEffect, useState } from "react";
 import "../../public/assets/css/style.css";
 import axios from "axios";
 const ViewTruck = () => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+  };
+  const VIEW_TRUCKS_URL = import.meta.env.VITE_VIEW_TRUCKS_URL;
+  const SEARCH_TRUCKS_URL = import.meta.env.VITE_SEARCH_TRUCKS_URL;
   const [search, setSearch] = useState("");
   const [trucks, setTrucks] = useState([]);
   const [display, setDisplay] = useState([]);
@@ -9,7 +17,7 @@ const ViewTruck = () => {
     e.preventDefault();
     try {
       await axios
-        .post("http://localhost:5000/trucks", { search })
+        .post(SEARCH_TRUCKS_URL, { search }, config)
         .then((res) => {
           if (res.data) {
             setDisplay(res.data);
@@ -18,8 +26,16 @@ const ViewTruck = () => {
             console.log("no data");
           }
         })
-        .catch((e) => {
-          console.log(e);
+        .catch((error) => {
+          if (error.response) {
+            // Display the server's error message for a Bad Request
+            alert(error.response.data.message);
+          } else {
+            console.error("An error occurred:", error);
+            alert(
+              "An error occurred. Please check the console for more details."
+            );
+          }
         });
     } catch (e) {
       console.log(e);
@@ -46,7 +62,7 @@ const ViewTruck = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await axios.get("http://localhost:5000/trucks");
+        const result = await axios.get(VIEW_TRUCKS_URL, config);
         setDisplay(result.data);
         setTrucks(result.data);
         console.log(trucks);

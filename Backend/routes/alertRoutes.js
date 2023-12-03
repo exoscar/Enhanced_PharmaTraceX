@@ -136,9 +136,9 @@ router.post("/updateStatus", verifyTokenMiddleware, async (req, res) => {
     );
 
     if (medicineUpdate && alertUpdate) {
-      return res.json("Updated successfully");
+      return res.json({ message: "Updated successfully" });
     } else {
-      return res.json("Update failed");
+      return res.json({ message: "Update failed" });
     }
   } catch (error) {
     console.error("Error updating status:", error);
