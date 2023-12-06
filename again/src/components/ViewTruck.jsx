@@ -131,6 +131,29 @@ const ViewTruck = () => {
                 </tr>
               </thead>
               <tbody>
+                {/* Check if display is an array before using map */}
+                {Array.isArray(display) ? (
+                  display.map((truck, i) => (
+                    <tr key={truck.RegistrationNumber}>
+                      <th scope="row">{truck.status}</th>
+                      <td>{truck.RegistrationNumber}</td>
+                      <td>
+                        {Array.isArray(truck.StripID) &&
+                          truck.StripID.map((id) => (
+                            <span key={id}>{id}, </span>
+                          ))}
+                      </td>
+                      <td>{truck.from}</td>
+                      <td>{truck.to}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5">No Trucks Found</td>
+                  </tr>
+                )}
+              </tbody>
+              {/* <tbody>
                 {display.map((truck, i) => (
                   <tr key={truck.RegistrationNumber}>
                     <th scope="row">{truck.status}</th>
@@ -144,7 +167,7 @@ const ViewTruck = () => {
                     <td>{truck.to}</td>
                   </tr>
                 ))}
-              </tbody>
+              </tbody> */}
             </table>
           </div>
         </div>

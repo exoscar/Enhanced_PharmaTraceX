@@ -241,7 +241,31 @@ const Alerts = () => {
                   <th scope="col">Humidity</th>
                 </tr>
               </thead>
+
               <tbody>
+                {/* Check if alerts is an array before using map */}
+                {Array.isArray(alerts) ? (
+                  alerts.map((alertt, i) => (
+                    <tr key={alertt.RegistrationNumber}>
+                      <th scope="row">{i + 1}</th>
+                      <td>{alertt.RegistrationNumber}</td>
+                      <td>
+                        {alertt.StripID.map((id) => (
+                          <span key={id}>{id}, </span>
+                        ))}
+                      </td>
+                      <td>{alertt.temperature}</td>
+                      <td>{alertt.humidity}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5">No Alerts Found</td>
+                  </tr>
+                )}
+              </tbody>
+
+              {/* <tbody>
                 {alerts.map((alertt, i) => (
                   <tr key={alertt.RegistrationNumber}>
                     <th scope="row">{i + 1}</th>
@@ -255,7 +279,7 @@ const Alerts = () => {
                     <td>{alertt.humidity}</td>
                   </tr>
                 ))}
-              </tbody>
+              </tbody> */}
             </table>
           </div>
         </div>

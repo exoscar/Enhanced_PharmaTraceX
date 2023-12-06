@@ -156,11 +156,29 @@ const SearchMedicine = () => {
                   <th scope="col">S.No</th>
                   <th scope="col">Registration Number</th>
                   <th scope="col">Strip ID</th>
-                  <th scope="col">Temperature</th>
-                  <th scope="col">Humidity</th>
+                  <th scope="col">Batch Number</th>
+                  <th scope="col">Status</th>
                 </tr>
               </thead>
               <tbody>
+                {/* Check if display is an array before using map */}
+                {Array.isArray(display) ? (
+                  display.map((medicine, i) => (
+                    <tr key={medicine.StripID}>
+                      <th scope="row">{i + 1}</th>
+                      <td>{medicine.MedicineName}</td>
+                      <td>{medicine.StripID}</td>
+                      <td>{medicine.BatchNumber}</td>
+                      <td>{medicine.status}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5">Loading...</td>
+                  </tr>
+                )}
+              </tbody>
+              {/* <tbody>
                 {display.map((medicine, i) => (
                   <tr key={medicine.StripID}>
                     <th scope="row">{i + 1}</th>
@@ -171,7 +189,7 @@ const SearchMedicine = () => {
                     <td>{medicine.status}</td>
                   </tr>
                 ))}
-              </tbody>
+              </tbody> */}
             </table>
           </div>
         </div>
