@@ -2,8 +2,8 @@
 const express = require("express");
 const router = express.Router();
 const path = require("path");
-const fs = require("fs");
-const qr = require("qrcode");
+// const fs = require("fs");
+// const qr = require("qrcode");
 // Define medicine-related routes
 const Medicine = require(path.join(
   __dirname,
@@ -119,29 +119,29 @@ router.post("/addMedicine", verifyTokenMiddleware, async (req, res) => {
       address: address,
     }));
 
-    StripIDs.forEach((StripID) => {
-      const viewurl =
-        "http://localhost:3000/viewMedicine/" + StripID.toString();
-      qr.toDataURL(viewurl, (err, dataUrl) => {
-        if (err) {
-          console.error("Error generating QR code for StripID:", StripID, err);
-        } else {
-          const imageBuffer = Buffer.from(
-            dataUrl.replace(/^data:image\/\w+;base64,/, ""),
-            "base64"
-          );
+    // StripIDs.forEach((StripID) => {
+    //   const viewurl =
+    //     "http://localhost:3000/viewMedicine/" + StripID.toString();
+    //   qr.toDataURL(viewurl, (err, dataUrl) => {
+    //     if (err) {
+    //       console.error("Error generating QR code for StripID:", StripID, err);
+    //     } else {
+    //       const imageBuffer = Buffer.from(
+    //         dataUrl.replace(/^data:image\/\w+;base64,/, ""),
+    //         "base64"
+    //       );
 
-          const filePath = path.resolve(
-            __dirname,
-            `../genqrs/qr-code${StripID}.png`
-          );
+    //       const filePath = path.resolve(
+    //         __dirname,
+    //         `../genqrs/qr-code${StripID}.png`
+    //       );
 
-          fs.writeFileSync(filePath, imageBuffer, "base64");
+    //       fs.writeFileSync(filePath, imageBuffer, "base64");
 
-          console.log(`QR code for StripID ${StripID} saved successfully.`);
-        }
-      });
-    });
+    //       console.log(`QR code for StripID ${StripID} saved successfully.`);
+    //     }
+    //   });
+    // });
 
     // Save the document
     await Medicine.insertMany(newMedicines);
