@@ -7,7 +7,7 @@ const verifyAsync = promisify(jwt.verify);
 const secret = process.env.JWT_SECRET || "me";
 
 function generateToken(payload) {
-  return signAsync(payload, secret, { expiresIn: "1h" });
+  return signAsync(payload, secret);
 }
 
 async function verifyToken(token) {
