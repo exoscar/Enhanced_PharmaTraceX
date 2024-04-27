@@ -143,8 +143,8 @@ const ViewTruck = () => {
                             <span key={id}>{id}, </span>
                           ))}
                       </td>
-                      <td>{truck.from}</td>
-                      <td>{truck.to}</td>
+                      <td>{truck.From}</td>
+                      <td>{truck.To}</td>
                     </tr>
                   ))
                 ) : (

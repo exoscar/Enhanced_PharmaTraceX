@@ -18,6 +18,9 @@ const ViewMedicine = () => {
       console.log(data);
       setData(data);
     } catch (error) {
+      if (error.reason === "Medicine with this NDC does not exist") {
+        alert("The Medicine is not found. It is a Fake Drug.");
+      }
       console.log(error);
     }
   };
